@@ -1,6 +1,8 @@
 
 # Robo
 
+ [![Build Status](https://travis-ci.org/tj/robo.svg?branch=master)](https://travis-ci.org/tj/robo)
+
  Simple YAML-based task runner written in Go.
 
  ![](http://img1.wikia.nocookie.net/__cb20130827204332/callofduty/images/f/fa/Giant_mech_Origins_BOII.png)
