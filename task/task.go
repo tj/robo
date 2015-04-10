@@ -37,7 +37,7 @@ func (t *Task) Run(args []string) error {
 		return t.RunCommand(args)
 	}
 
-	return fmt.Errorf("nothing to run (add script or command keys)")
+	return fmt.Errorf("nothing to run (add script, command, or exec key)")
 }
 
 // RunScript runs the target shell `script` file.
