@@ -15,6 +15,8 @@
 
 ## Installation
 
+ Via binary [releases](https://github.com/tj/robo/releases).
+
  Via `go-get`:
 
 ```
