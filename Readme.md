@@ -184,6 +184,33 @@ templates:
 alias segment='robo --config ~/.robo.yml'
 ```
 
+## Robo chaining
+
+ You can easily use Robo to chain Robo, which is useful
+ for multi-environment setups. For example:
+
+```yml
+prod:
+  summary: production tasks
+  exec: robo --config production.yml
+
+stage:
+  summary: stage tasks
+  exec: robo --config stage.yml
+```
+
+ Or on remote boxes:
+
+```yml
+prod:
+  summary: production tasks
+  exec: ssh prod-tools -t robo --config production.yml
+
+stage:
+  summary: stage tasks
+  exec: ssh stage-tools -t robo --config production.yml
+```
+
 ## Why?
 
  We generally use Makefiles for project specific tasks, however
