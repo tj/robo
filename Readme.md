@@ -157,6 +157,27 @@ events:
       command: robo events gy2d 25
 ```
 
+### Variables
+
+ Robo supports variables via the [text/template](http://golang.org/pkg/text/template/) package. All you have to do is define a map of `variables` and use `{{` `}}` to refer to them.
+
+ Here's an example:
+
+```yml
+stage:
+  summary: Run commands against stage.
+  command: ssh {{.hosts.stage}} -t robo
+
+prod:
+  summary: Run commands against prod.
+  command: ssh {{.hosts.prod}} -t robo
+
+variables:
+  hosts:
+    prod: bastion-prod
+    stage: bastion-stage
+```
+
 ### Templates
 
  Task `list` and `help` output may be re-configured, for example if you
