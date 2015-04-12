@@ -11,8 +11,9 @@ type Config struct {
 	Tasks     map[string]*task.Task `yaml:",inline"`
 	Variables map[string]interface{}
 	Templates struct {
-		List string
-		Help string
+		List      string
+		Help      string
+		Variables string
 	}
 }
 

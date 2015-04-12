@@ -24,6 +24,12 @@ var list = `
 {{end}}
 `
 
+// Variables template.
+var variables = `
+{{range $k, $v := .Variables}}  {{cyan $k}} – {{$v}}
+{{end}}
+`
+
 // Help template.
 var help = `
   {{cyan "Usage:"}}
@@ -40,6 +46,17 @@ var help = `
     $ {{.Command}}
   {{end}}{{end}}
 `
+
+// ListVariables outputs the variables defined.
+func ListVariables(c *config.Config) {
+	tmpl := t(variables)
+
+	if c.Templates.Variables != "" {
+		tmpl = t(c.Templates.Variables)
+	}
+
+	tmpl.Execute(os.Stdout, c)
+}
 
 // List outputs the tasks defined.
 func List(c *config.Config) {

@@ -11,6 +11,7 @@ const Usage = `
     robo [--config file]
     robo <task> [<arg>...] [--config file]
     robo help [<task>] [--config file]
+    robo variables [--config file]
     robo -h | --help
     robo --version
 
@@ -48,6 +49,8 @@ func main() {
 		} else {
 			cli.List(c)
 		}
+	case args["variables"].(bool):
+		cli.ListVariables(c)
 	default:
 		if name, ok := args["<task>"].(string); ok {
 			cli.Run(c, name, args["<arg>"].([]string))
