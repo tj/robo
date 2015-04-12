@@ -130,6 +130,8 @@ hello:
   script: path/to/script.sh
 ```
 
+ Script paths are relative to the _config_ file, not the working directory.
+
 ### Usage
 
  Tasks may optionally specify usage parameters, which display

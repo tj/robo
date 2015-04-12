@@ -3,6 +3,7 @@ package cli
 import "github.com/tj/robo/config"
 import "github.com/fatih/color"
 import "text/template"
+import "path/filepath"
 import "fmt"
 import "os"
 
@@ -89,10 +90,11 @@ func Help(c *config.Config, name string) {
 // Run the task.
 func Run(c *config.Config, name string, args []string) {
 	task, ok := c.Tasks[name]
-
 	if !ok {
 		Fatalf("undefined task %q", name)
 	}
+
+	task.LookupPath = filepath.Dir(c.File)
 
 	err := task.Run(args)
 	if err != nil {

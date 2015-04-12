@@ -8,6 +8,7 @@ import "bytes"
 
 // Config.
 type Config struct {
+	File      string
 	Tasks     map[string]*task.Task `yaml:",inline"`
 	Variables map[string]interface{}
 	Templates struct {
@@ -24,7 +25,10 @@ func New(file string) (*Config, error) {
 		return nil, err
 	}
 
-	return NewString(string(b))
+	c, err := NewString(string(b))
+	c.File = file
+
+	return c, err
 }
 
 // NewString configuration from string.

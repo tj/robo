@@ -1,5 +1,6 @@
 package task
 
+import "path/filepath"
 import "os/exec"
 import "strings"
 import "syscall"
@@ -14,13 +15,14 @@ type Example struct {
 
 // Task definition.
 type Task struct {
-	Name     string `yaml:"-"`
-	Summary  string
-	Command  string
-	Script   string
-	Exec     string
-	Usage    string
-	Examples []*Example
+	LookupPath string
+	Name       string `yaml:"-"`
+	Summary    string
+	Command    string
+	Script     string
+	Exec       string
+	Usage      string
+	Examples   []*Example
 }
 
 // Run the task with `args`.
@@ -42,7 +44,8 @@ func (t *Task) Run(args []string) error {
 
 // RunScript runs the target shell `script` file.
 func (t *Task) RunScript(args []string) error {
-	args = append([]string{t.Script}, args...)
+	path := filepath.Join(t.LookupPath, t.Script)
+	args = append([]string{path}, args...)
 	cmd := exec.Command("sh", args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
