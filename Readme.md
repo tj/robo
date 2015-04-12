@@ -12,8 +12,8 @@
  - Not super slow
  - Not super obscure
  - No dependencies
+ - Variables
  - Simple
- - That's it
 
 ## Installation
 
