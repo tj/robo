@@ -214,7 +214,7 @@ prod:
 
 stage:
   summary: stage tasks
-  exec: ssh stage-tools -t robo --config production.yml
+  exec: ssh stage-tools -t robo --config stage.yml
 ```
 
 ## Why?
