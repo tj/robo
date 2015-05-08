@@ -4,7 +4,7 @@ import "github.com/tj/robo/config"
 import "github.com/tj/robo/cli"
 import "github.com/tj/docopt"
 
-var Version = "0.2.0"
+var Version = "0.3.0"
 
 const Usage = `
   Usage:

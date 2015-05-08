@@ -1,4 +1,9 @@
 
+v0.3.0 / 2015-05-07
+===================
+
+  * change command behaviour to allow for positional vars
+
 v0.2.0 / 2015-04-12
 ===================
 
