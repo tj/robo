@@ -55,8 +55,8 @@ func (t *Task) RunScript(args []string) error {
 
 // RunCommand runs the `command` via the shell.
 func (t *Task) RunCommand(args []string) error {
-	args = append([]string{t.Command}, args...)
-	cmd := exec.Command("sh", "-c", strings.Join(args, " "))
+	args = append([]string{"-c", t.Command, "sh"}, args...)
+	cmd := exec.Command("sh", args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

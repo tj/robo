@@ -74,7 +74,7 @@ $ robo help events
 
 ```yml
 aws:
-  command: ssh tools aws
+  exec: ssh tools aws
 ```
 
  You may then interact with the AWS cli as you would normally:
@@ -108,6 +108,25 @@ hello:
     echo world
 ```
 
+ Commands are executed via `sh -c`, thus you may use shell features and
+ positional variables, for example:
+
+```yml
+hello:
+  command: echo "Hello ${1:-there}"
+```
+
+ Yields:
+
+```
+$ robo hello
+Hello there
+
+$ robo hello Tobi
+Hello there Tobi
+```
+
+
 ### Exec
 
  The exec alternative lets you replace the robo image without
@@ -119,6 +138,8 @@ hello:
   summary: some task
   exec: echo hello
 ```
+
+ Any arguments given are simply appended.
 
 ### Scripts
 
@@ -140,7 +161,7 @@ hello:
 ```yml
 events:
   summary: send data to the "events" topic
-  command: docker run -it events
+  exec: docker run -it events
   usage: "[project-id] [rate]"
 ```
 
@@ -152,7 +173,7 @@ events:
 ```yml
 events:
   summary: send data to the "events" topic
-  command: docker run -it events
+  exec: docker run -it events
   usage: "[project-id] [rate]"
   examples:
     - description: Send 25 events a second to gy2d
@@ -168,11 +189,11 @@ events:
 ```yml
 stage:
   summary: Run commands against stage.
-  command: ssh {{.hosts.stage}} -t robo
+  exec: ssh {{.hosts.stage}} -t robo
 
 prod:
   summary: Run commands against prod.
-  command: ssh {{.hosts.prod}} -t robo
+  exec: ssh {{.hosts.prod}} -t robo
 
 variables:
   hosts:
