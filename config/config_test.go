@@ -1,8 +1,11 @@
 package config_test
 
-import "github.com/bmizerany/assert"
-import "github.com/tj/robo/config"
-import "testing"
+import (
+	"testing"
+
+	"github.com/bmizerany/assert"
+	"github.com/tj/robo/config"
+)
 
 var s = `
 foo:

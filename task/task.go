@@ -1,11 +1,13 @@
 package task
 
-import "path/filepath"
-import "os/exec"
-import "strings"
-import "syscall"
-import "fmt"
-import "os"
+import (
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"syscall"
+)
 
 // Example usage.
 type Example struct {

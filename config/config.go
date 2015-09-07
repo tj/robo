@@ -1,12 +1,16 @@
 package config
 
-import "github.com/tj/robo/task"
-import "gopkg.in/yaml.v2"
-import "text/template"
-import "io/ioutil"
-import "bytes"
+import (
+	"bytes"
+	"io/ioutil"
+	"text/template"
 
-// Config.
+	"github.com/tj/robo/task"
+	"gopkg.in/yaml.v2"
+)
+
+// Config represents the main YAML configuration
+// loaded for Robo tasks.
 type Config struct {
 	File      string
 	Tasks     map[string]*task.Task `yaml:",inline"`

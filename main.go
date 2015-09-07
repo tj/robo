@@ -1,12 +1,14 @@
 package main
 
-import "github.com/tj/robo/config"
-import "github.com/tj/robo/cli"
-import "github.com/tj/docopt"
+import (
+	"github.com/tj/docopt"
+	"github.com/tj/robo/cli"
+	"github.com/tj/robo/config"
+)
 
-var Version = "0.3.0"
+var version = "0.3.0"
 
-const Usage = `
+const usage = `
   Usage:
     robo [--config file]
     robo <task> [<arg>...] [--config file]
@@ -31,7 +33,7 @@ const Usage = `
 `
 
 func main() {
-	args, err := docopt.Parse(Usage, nil, true, Version, true)
+	args, err := docopt.Parse(usage, nil, true, version, true)
 	if err != nil {
 		cli.Fatalf("error parsing arguments: %s", err)
 	}

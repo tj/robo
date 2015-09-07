@@ -1,11 +1,14 @@
 package cli
 
-import "github.com/tj/robo/config"
-import "github.com/fatih/color"
-import "text/template"
-import "path/filepath"
-import "fmt"
-import "os"
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"text/template"
+
+	"github.com/fatih/color"
+	"github.com/tj/robo/config"
+)
 
 // Template helpers.
 var helpers = template.FuncMap{
