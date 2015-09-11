@@ -68,7 +68,7 @@ $ robo help events
 ### Running tasks
 
  Regardless of task type (shell, exec, script) any additional arguments
- or given will be passed.
+ given will be passed.
 
  For example suppose you have the following task:
 
