@@ -5,8 +5,9 @@ import (
 	"io/ioutil"
 	"text/template"
 
-	"github.com/tj/robo/task"
 	"gopkg.in/yaml.v2"
+
+	"github.com/tj/robo/task"
 )
 
 // Config represents the main YAML configuration
@@ -30,9 +31,11 @@ func New(file string) (*Config, error) {
 	}
 
 	c, err := NewString(string(b))
-	c.File = file
+	if err != nil {
+		return nil, err
+	}
 
-	return c, err
+	return c, nil
 }
 
 // NewString configuration from string.
