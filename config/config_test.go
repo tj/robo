@@ -1,6 +1,8 @@
 package config_test
 
 import (
+	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/bmizerany/assert"
@@ -49,4 +51,22 @@ func TestNewString(t *testing.T) {
 	assert.Equal(t, `echo "bar"`, c.Tasks["bar"].Command)
 
 	assert.Equal(t, `testing`, c.Templates.List)
+}
+
+func TestNew(t *testing.T) {
+	b := []byte(s)
+	f, err := ioutil.TempFile("", "")
+	assert.Equal(t, nil, err)
+
+	file := f.Name()
+	defer os.Remove(file)
+
+	_, err = f.Write(b)
+	assert.Equal(t, nil, err)
+
+	f.Close()
+
+	c, err := config.New(file)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, file, c.File)
 }

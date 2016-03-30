@@ -35,6 +35,7 @@ func New(file string) (*Config, error) {
 		return nil, err
 	}
 
+	c.File = file
 	return c, nil
 }
 
