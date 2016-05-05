@@ -108,8 +108,7 @@ hello:
     echo world
 ```
 
- Commands are executed via `sh -c`, thus you may use shell features and
- positional variables, for example:
+ Commands are executed via `bash -c` (or `sh -c` if bash is not installed), thus you may use shell features and positional variables, for example:
 
 ```yml
 hello:

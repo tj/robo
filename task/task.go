@@ -9,6 +9,8 @@ import (
 	"syscall"
 )
 
+var shellName string
+
 // Example usage.
 type Example struct {
 	Description string
@@ -25,6 +27,14 @@ type Task struct {
 	Exec       string
 	Usage      string
 	Examples   []*Example
+}
+
+// Use bash if installed, else use shell
+path, err := exec.LookPath("bash")
+if err == nil {
+  shellName = "bash"
+} else {
+  shellName = "sh"
 }
 
 // Run the task with `args`.
@@ -48,7 +58,7 @@ func (t *Task) Run(args []string) error {
 func (t *Task) RunScript(args []string) error {
 	path := filepath.Join(t.LookupPath, t.Script)
 	args = append([]string{path}, args...)
-	cmd := exec.Command("sh", args...)
+	cmd := exec.Command(shellName, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -58,7 +68,7 @@ func (t *Task) RunScript(args []string) error {
 // RunCommand runs the `command` via the shell.
 func (t *Task) RunCommand(args []string) error {
 	args = append([]string{"-c", t.Command, "sh"}, args...)
-	cmd := exec.Command("sh", args...)
+	cmd := exec.Command(shellName, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
