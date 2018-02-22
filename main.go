@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/tj/docopt"
 	"github.com/tj/robo/cli"
 	"github.com/tj/robo/config"
@@ -18,7 +20,7 @@ const usage = `
     robo --version
 
   Options:
-    -c, --config file   config file to load [default: robo.yml]
+    -c, --config file   config file to load
     -h, --help          output help information
     -v, --version       output version
 
@@ -38,8 +40,16 @@ func main() {
 		cli.Fatalf("error parsing arguments: %s", err)
 	}
 
-	file := args["--config"].(string)
-	c, err := config.New(file)
+	c := args["--config"]
+	if c == nil {
+		c = os.Getenv("ROBO_CONFIG")
+		if c == nil || c == "" {
+			cli.Fatalf("robo requires a config file passed via --config or the ROBO_CONFIG env var")
+		}
+	}
+
+	file := c.(string)
+	conf, err := config.New(file)
 	if err != nil {
 		cli.Fatalf("error loading configuration: %s", err)
 	}
@@ -47,17 +57,17 @@ func main() {
 	switch {
 	case args["help"].(bool):
 		if name, ok := args["<task>"].(string); ok {
-			cli.Help(c, name)
+			cli.Help(conf, name)
 		} else {
-			cli.List(c)
+			cli.List(conf)
 		}
 	case args["variables"].(bool):
-		cli.ListVariables(c)
+		cli.ListVariables(conf)
 	default:
 		if name, ok := args["<task>"].(string); ok {
-			cli.Run(c, name, args["<arg>"].([]string))
+			cli.Run(conf, name, args["<arg>"].([]string))
 		} else {
-			cli.List(c)
+			cli.List(conf)
 		}
 	}
 }
