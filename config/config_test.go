@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/bmizerany/assert"
-	"github.com/tj/robo/config"
+	"github.com/segmentio/robo/config"
 )
 
 var s = `
