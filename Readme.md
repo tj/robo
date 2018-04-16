@@ -17,12 +17,12 @@
 
 ## Installation
 
- Via binary [releases](https://github.com/tj/robo/releases).
+ Via binary [releases](https://github.com/segmentio/robo/releases).
 
  Via `go-get`:
 
 ```
-$ go get github.com/tj/robo
+$ go get github.com/segmentio/robo
 ```
 
 ## Usage

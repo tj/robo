@@ -3,12 +3,20 @@ package main
 import (
 	"os"
 
+	"github.com/segmentio/robo/cli"
+	"github.com/segmentio/robo/config"
 	"github.com/tj/docopt"
-	"github.com/tj/robo/cli"
-	"github.com/tj/robo/config"
+	analytics "gopkg.in/segmentio/analytics-go.v3"
 )
 
-var version = "0.4.1"
+var version = "0.4.2"
+
+const analyticsWriteKey = "JX2IUwzrdfKoGilkImNmjRdjNFPmSMfe"
+
+var (
+	username        string
+	analyticsClient analytics.Client
+)
 
 const usage = `
   Usage:
@@ -40,6 +48,17 @@ func main() {
 		cli.Fatalf("error parsing arguments: %s", err)
 	}
 
+	analyticsClient, _ = analytics.NewWithConfig(analyticsWriteKey, analytics.Config{
+		BatchSize: 1,
+	})
+
+	username = os.Getenv("USER")
+	analyticsClient.Enqueue(analytics.Identify{
+		UserId: username,
+		Traits: analytics.NewTraits().
+			Set("robo-version", version),
+	})
+
 	c := args["--config"]
 	if c == nil {
 		c = os.Getenv("ROBO_CONFIG")
@@ -65,9 +84,22 @@ func main() {
 		cli.ListVariables(conf)
 	default:
 		if name, ok := args["<task>"].(string); ok {
-			cli.Run(conf, name, args["<arg>"].([]string))
+			arguments := args["<arg>"].([]string)
+			analyticsClient.Enqueue(analytics.Track{
+				UserId: username,
+				Event:  "Ran Command",
+				Properties: analytics.NewProperties().
+					Set("robo-version", version).
+					Set("config", file).
+					Set("task", name).
+					Set("args", arguments),
+			})
+
+			cli.Run(conf, name, arguments)
 		} else {
 			cli.List(conf)
 		}
 	}
+
+	analyticsClient.Close()
 }
