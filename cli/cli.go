@@ -30,7 +30,10 @@ var list = `
 
 // Variables template.
 var variables = `
-{{range $k, $v := .Variables}}  {{cyan $k}} – {{$v}}
+{{- range $parent, $v := .Variables}}
+{{- range $k, $v := $v }}
+    {{cyan "%s.%s" $parent $k }}: {{$v}}
+{{- end}}
 {{end}}
 `
 
