@@ -1,0 +1,12 @@
+
+dev:
+  summary: development commands
+  exec: robo --config {{ .robo.path }}/dev.yml
+
+stage:
+  summary: development commands
+  exec: robo --config {{ .robo.path }}/stage.yml
+
+prod:
+  summary: development commands
+  exec: robo --config {{ .robo.path }}/prod.yml
