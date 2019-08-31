@@ -1,11 +1,10 @@
 language: go
-
+notifications:
+  email: false
 env:
   - GO111MODULE=on
-
 go:
   - 1.12
   - tip
-
 install:
   - go get -t ./...
