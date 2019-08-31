@@ -1,0 +1,4 @@
+
+user:
+  summary: print the current user variables
+  command: echo user={{ .user }}
