@@ -8,7 +8,7 @@ import (
 	"github.com/tj/robo/config"
 )
 
-var version = "0.5.1"
+var version = "0.5.3"
 
 const usage = `
   Usage:
