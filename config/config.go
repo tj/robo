@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"io/ioutil"
+	"os/user"
 	"path"
 	"text/template"
 
@@ -73,6 +74,17 @@ func New(file string) (*Config, error) {
 		c.Variables["robo"] = map[string]string{
 			"path": path.Dir(c.File),
 			"file": c.File,
+		}
+	}
+
+	// Add the current user.
+	if _, ok := c.Variables["user"]; !ok {
+		if user, err := user.Current(); err == nil {
+			c.Variables["user"] = map[string]string{
+				"name":     user.Name,
+				"username": user.Username,
+				"home":     user.HomeDir,
+			}
 		}
 	}
 

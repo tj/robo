@@ -216,6 +216,20 @@ variables:
     stage: bastion-stage
 ```
 
+  Along with your own custom variables, robo defines the following variables:
+
+```bash
+$ robo variables
+
+    robo.file: /Users/amir/dev/src/github.com/tj/robo/robo.yml
+    robo.path: /Users/amir/dev/src/github.com/tj/robo
+
+    user.home: /Users/amir
+    user.name: Amir Abushareb
+    user.username: amir
+
+```
+
 ### Environment
 
 Tasks may define `env` key with an array of environment variables, this allows you
