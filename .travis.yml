@@ -1,9 +1,8 @@
 language: go
 
 go:
-  - 1.4
+  - 1.12
   - tip
 
 install:
-  - go get golang.org/x/tools/cmd/cover
   - go get -t ./...
