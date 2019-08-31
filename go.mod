@@ -11,6 +11,7 @@ require (
 	github.com/logrusorgru/aurora v0.0.0-20190803045625-94edacc10f9b
 	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/mattn/go-isatty v0.0.9 // indirect
+	github.com/mattn/go-shellwords v1.0.6
 	github.com/tj/docopt v1.0.0
 	github.com/tj/kingpin v2.5.0+incompatible
 	gopkg.in/yaml.v2 v2.2.2
