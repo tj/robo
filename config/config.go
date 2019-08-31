@@ -56,9 +56,22 @@ func NewString(s string) (*Config, error) {
 
 	// interpolation
 	for _, task := range c.Tasks {
-		err := interpolate(c.Variables, &task.Command, &task.Summary, &task.Script, &task.Exec)
+		err := interpolate(
+			c.Variables,
+			&task.Command,
+			&task.Summary,
+			&task.Script,
+			&task.Exec,
+		)
 		if err != nil {
 			return nil, err
+		}
+
+		for i, item := range task.Env {
+			if err := interpolate(c.Variables, &item); err != nil {
+				return nil, err
+			}
+			task.Env[i] = item
 		}
 	}
 
