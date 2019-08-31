@@ -1,0 +1,4 @@
+
+hello:
+  summary: some task
+  command: echo world
