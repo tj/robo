@@ -1,0 +1,4 @@
+
+echo:
+  summary: echo from zsh
+  script: echo.zsh

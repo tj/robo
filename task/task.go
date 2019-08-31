@@ -47,8 +47,19 @@ func (t *Task) Run(args []string) error {
 // RunScript runs the target shell `script` file.
 func (t *Task) RunScript(args []string) error {
 	path := filepath.Join(t.LookupPath, t.Script)
-	args = append([]string{path}, args...)
-	cmd := exec.Command("sh", args...)
+	bin := path
+
+	stat, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+
+	if !stat.IsDir() && stat.Mode()&0100 == 0 {
+		args = append([]string{path}, args...)
+		bin = "sh"
+	}
+
+	cmd := exec.Command(bin, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
