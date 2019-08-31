@@ -1,4 +1,11 @@
 
+v0.5.4 / 2019-08-31
+===================
+
+  * examples: add user example
+  * doc: add robo built-in variables doc
+  * config: add user built-in variables
+
 v0.5.3 / 2019-08-31
 ===================
 
