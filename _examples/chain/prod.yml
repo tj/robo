@@ -1,4 +1,4 @@
 
 env:
   summary: output env name
-  command: echo prod
+  command: echo $E

@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"syscall"
 
 	"github.com/mattn/go-shellwords"
@@ -93,7 +94,33 @@ func (t *Task) RunExec(args []string) error {
 		return err
 	}
 
-	env := append(os.Environ(), t.Env...)
+	env := merge(os.Environ(), t.Env)
 	args = append(fields, args...)
 	return syscall.Exec(path, args, env)
+}
+
+// Merge merges the given two lists of env vars.
+func merge(a, b []string) []string {
+	var items = make(map[string]string)
+	var ret []string
+
+	for _, item := range a {
+		if i := strings.Index(item, "="); i != -1 {
+			key := item[:i]
+			items[key] = item[i+1:]
+		}
+	}
+
+	for _, item := range b {
+		if i := strings.Index(item, "="); i != -1 {
+			key := item[:i]
+			items[key] = item[i+1:]
+		}
+	}
+
+	for k, v := range items {
+		ret = append(ret, k+"="+v)
+	}
+
+	return ret
 }
