@@ -1,0 +1,14 @@
+
+one:
+  summary: echo one
+  command: echo one
+
+two:
+  summary: echo two
+  command: echo two
+
+all:
+  summary: echo one two
+  command: |
+    robo -c {{ .robo.file }} one
+    robo -c {{ .robo.file }} two
