@@ -2,4 +2,8 @@
 test:
 	@go test -cover ./...
 
-.PHONY: test
+dist:
+	@gox -output "dist/{{.Dir}}_{{.OS}}_{{.Arch}}"
+
+clean:
+	rm -fr dist

@@ -25,6 +25,7 @@ github.com/tj/docopt v1.0.0/go.mod h1:UWdJekySvYOgmpTJtkPaWS4fvSKYba+U6+E2iKJCV/
 github.com/tj/kingpin v2.5.0+incompatible h1:nZWdCABGeebLFX5Ha/rYqxgEQpSXYWh5N9Dx2sGR0Bs=
 github.com/tj/kingpin v2.5.0+incompatible/go.mod h1:/babRmtQneL+pp+Yi24s2gukswokaKCR4gfjGbnjHBk=
 golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/sys v0.0.0-20190813064441-fde4db37ae7a h1:aYOabOQFp6Vj6W1F80affTUvO9UxmJRx8K0gsfABByQ=
 golang.org/x/sys v0.0.0-20190813064441-fde4db37ae7a/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v2 v2.2.2 h1:ZCJp+EgiOT7lHqUV2J862kp8Qj64Jo6az82+3Td9dZw=
