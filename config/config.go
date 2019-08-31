@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"io/ioutil"
+	"path"
 	"text/template"
 
 	"gopkg.in/yaml.v2"
@@ -23,6 +24,31 @@ type Config struct {
 	}
 }
 
+// Eval evaluates the config by interpolating
+// all templates using the variables.
+func (c *Config) Eval() error {
+	for _, task := range c.Tasks {
+		err := interpolate(
+			c.Variables,
+			&task.Command,
+			&task.Summary,
+			&task.Script,
+			&task.Exec,
+		)
+		if err != nil {
+			return err
+		}
+
+		for i, item := range task.Env {
+			if err := interpolate(c.Variables, &item); err != nil {
+				return err
+			}
+			task.Env[i] = item
+		}
+	}
+	return nil
+}
+
 // New configuration loaded from `file`.
 func New(file string) (*Config, error) {
 	b, err := ioutil.ReadFile(file)
@@ -34,8 +60,27 @@ func New(file string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	c.File = file
+
+	// Initialize variables if needed.
+	if c.Variables == nil {
+		c.Variables = make(map[string]interface{})
+	}
+
+	// Expose robo's internal variables
+	// but respect users who override them.
+	if _, ok := c.Variables["robo"]; !ok {
+		c.Variables["robo"] = map[string]string{
+			"path": path.Dir(c.File),
+			"file": c.File,
+		}
+	}
+
+	// Interpolate variables.
+	if err := c.Eval(); err != nil {
+		return nil, err
+	}
+
 	return c, nil
 }
 
@@ -52,27 +97,6 @@ func NewString(s string) (*Config, error) {
 	// assign .Name
 	for name, task := range c.Tasks {
 		task.Name = name
-	}
-
-	// interpolation
-	for _, task := range c.Tasks {
-		err := interpolate(
-			c.Variables,
-			&task.Command,
-			&task.Summary,
-			&task.Script,
-			&task.Exec,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		for i, item := range task.Env {
-			if err := interpolate(c.Variables, &item); err != nil {
-				return nil, err
-			}
-			task.Env[i] = item
-		}
 	}
 
 	return c, nil
