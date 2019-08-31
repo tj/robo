@@ -5,8 +5,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"syscall"
+
+	"github.com/mattn/go-shellwords"
 )
 
 // Example usage.
@@ -81,9 +82,12 @@ func (t *Task) RunCommand(args []string) error {
 
 // RunExec runs the `exec` command.
 func (t *Task) RunExec(args []string) error {
-	fields := strings.Fields(t.Exec)
-	bin := fields[0]
+	fields, err := shellwords.Parse(t.Exec)
+	if err != nil {
+		return err
+	}
 
+	bin := fields[0]
 	path, err := exec.LookPath(bin)
 	if err != nil {
 		return err
