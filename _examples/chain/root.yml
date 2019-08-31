@@ -2,11 +2,14 @@
 dev:
   summary: development commands
   exec: robo --config {{ .robo.path }}/dev.yml
+  env: ["E=dev"]
 
 stage:
   summary: development commands
   exec: robo --config {{ .robo.path }}/stage.yml
+  env: ["E=stage"]
 
 prod:
   summary: development commands
   exec: robo --config {{ .robo.path }}/prod.yml
+  env: ["E=prod"]
