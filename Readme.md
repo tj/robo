@@ -241,7 +241,7 @@ prod:
 
 You can also override environment variables:
 
-```yaml
+```bash
 $ cat > robo.yml
 home:
   summary: overrides $HOME
@@ -253,7 +253,7 @@ $ robo home // => /tmp
 
 Variables can also be used to set env vars.
 
-```yaml
+```bash
 $ cat > robo.yml
 aws-stage:
   summary: AWS stage
