@@ -328,6 +328,27 @@ stage:
   exec: ssh stage-tools -t robo --config stage.yml
 ```
 
+  You can also use robo's builtin variables `robo.path`, for example
+  if you put all robofiles in together:
+
+```bash
+├── dev.yml
+├── prod.yml
+├── root.yml
+└── stage.yml
+```
+
+  And you would like to call `dev`, `prod` and `stage` from `root`:
+
+```yml
+dev:
+  summary: Development commands
+  exec: robo --config {{ .robo.path }}/dev.yml
+
+stage:
+  ...
+```
+
 ## Why?
 
  We generally use Makefiles for project specific tasks, however
