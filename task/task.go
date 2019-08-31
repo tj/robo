@@ -25,6 +25,7 @@ type Task struct {
 	Exec       string
 	Usage      string
 	Examples   []*Example
+	Env        []string
 }
 
 // Run the task with `args`.
@@ -60,6 +61,7 @@ func (t *Task) RunScript(args []string) error {
 	}
 
 	cmd := exec.Command(bin, args...)
+	cmd.Env = append(os.Environ(), t.Env...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -70,6 +72,7 @@ func (t *Task) RunScript(args []string) error {
 func (t *Task) RunCommand(args []string) error {
 	args = append([]string{"-c", t.Command, "sh"}, args...)
 	cmd := exec.Command("sh", args...)
+	cmd.Env = append(os.Environ(), t.Env...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -86,6 +89,7 @@ func (t *Task) RunExec(args []string) error {
 		return err
 	}
 
+	env := append(os.Environ(), t.Env...)
 	args = append(fields, args...)
-	return syscall.Exec(path, args, os.Environ())
+	return syscall.Exec(path, args, env)
 }

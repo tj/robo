@@ -201,6 +201,44 @@ variables:
     stage: bastion-stage
 ```
 
+### Environment
+
+Tasks may define `env` key with an array of environment variables, this allows you
+to re-use robo configuration files, for example:
+
+```yaml
+// aws.yml
+dev:
+  summary: AWS commands in dev environment
+  exec: aws
+  env: ["AWS_PROFILE=eng-dev"]
+
+stage:
+  summary: AWS commands in stage environment
+  exec: aws
+  env: ["AWS_PROFILE=eng-stage"]
+
+prod:
+  summary: AWS commands in prod environment
+  exec: aws
+  env: ["AWS_PROFILE=eng-prod"]
+```
+
+You can also override environment variables:
+
+```yaml
+home:
+  summary: overrides $HOME
+  exec: echo $HOME
+  env: ["HOME=/tmp"]
+```
+
+```
+robo home // => /tmp
+```
+
+Note that you cannot use shell featurs in the environment key, the list is static.
+
 ### Templates
 
  Task `list` and `help` output may be re-configured, for example if you
