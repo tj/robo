@@ -1,4 +1,19 @@
 
+v0.5.0 / 2019-08-31
+===================
+
+  * doc: add compose, chain, env
+  * examples: add compose, chain, env, exec, executable scripts
+  * cli: improve variables output
+  * config: add robo vars
+  * task: fix exec escape
+  * env: interpolate env vars using variables
+  * cmd: resolve --config path
+  * add env var support to allow re-use of robo conf files
+  * task: run script directly if it is executable
+  * ci: bump to latest go version
+  * go: migrate to go modules
+
 v0.4.1 / 2016-03-29
 ===================
 
