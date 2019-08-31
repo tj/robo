@@ -151,7 +151,22 @@ hello:
   script: path/to/script.sh
 ```
 
- Script paths are relative to the _config_ file, not the working directory.
+ If the script is executable, it is invoked directly, this allows you
+ to use `#!`:
+
+```
+$ echo -e '#!/usr/bin/env ruby\nputs "yo"' > yo.rb
+$ chmod +x yo.rb
+$ cat > robo.yml
+yo:
+  summary: yo from rb
+  script: yo.rb
+^C
+$ robo yo
+yo
+```
+
+Script paths are relative to the _config_ file, not the working directory.
 
 ### Usage
 
