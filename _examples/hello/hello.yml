@@ -2,3 +2,7 @@
 hello:
   summary: some task
   command: echo world
+
+aws:
+  summary: exec example
+  exec: aws
