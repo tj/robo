@@ -349,6 +349,33 @@ stage:
   ...
 ```
 
+## Composition
+
+  You can compose multiple commands into a single command
+  by utilizing robo's built-in `robo.file` variable:
+
+```yml
+one:
+  summary: echo one
+  command: echo one
+
+two:
+  summary: echo two
+  command: echo two
+
+all:
+  summary: echo one two
+  command: |
+    robo -c {{ .robo.file }} one
+    robo -c {{ .robo.file }} two
+```
+
+```
+$ robo all
+one
+two
+```
+
 ## Why?
 
  We generally use Makefiles for project specific tasks, however
