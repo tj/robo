@@ -1,6 +1,8 @@
 package main
 
 import (
+	"path/filepath"
+
 	"github.com/tj/docopt"
 	"github.com/tj/robo/cli"
 	"github.com/tj/robo/config"
@@ -38,8 +40,12 @@ func main() {
 		cli.Fatalf("error parsing arguments: %s", err)
 	}
 
-	file := args["--config"].(string)
-	c, err := config.New(file)
+	abs, err := filepath.Abs(args["--config"].(string))
+	if err != nil {
+		cli.Fatalf("cannot resolve --config: %s", err)
+	}
+
+	c, err := config.New(abs)
 	if err != nil {
 		cli.Fatalf("error loading configuration: %s", err)
 	}

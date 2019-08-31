@@ -1,0 +1,8 @@
+
+ruby:
+  summary: prints yo! from ruby
+  script: yo.rb
+
+js:
+  summary: prints yo! from js
+  script: yo.js
