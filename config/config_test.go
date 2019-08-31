@@ -41,6 +41,8 @@ func TestNewString(t *testing.T) {
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 4, len(c.Tasks))
 
+	assert.Equal(t, nil, c.Eval())
+
 	assert.Equal(t, `ssh bastion-stage -t robo`, c.Tasks["stage"].Command)
 	assert.Equal(t, `ssh bastion-prod -t robo`, c.Tasks["prod"].Command)
 
