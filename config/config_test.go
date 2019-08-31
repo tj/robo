@@ -25,6 +25,7 @@ stage:
 prod:
   summary: Run commands against prod.
   command: ssh {{.hosts.prod}} -t robo
+  env: ["H={{.hosts.prod}}"]
 
 templates:
   list: testing
@@ -49,6 +50,8 @@ func TestNewString(t *testing.T) {
 
 	assert.Equal(t, `Command bar.`, c.Tasks["bar"].Summary)
 	assert.Equal(t, `echo "bar"`, c.Tasks["bar"].Command)
+
+	assert.Equal(t, []string{"H=bastion-prod"}, c.Tasks["prod"].Env)
 
 	assert.Equal(t, `testing`, c.Templates.List)
 }

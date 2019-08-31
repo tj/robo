@@ -242,17 +242,31 @@ prod:
 You can also override environment variables:
 
 ```yaml
+$ cat > robo.yml
 home:
   summary: overrides $HOME
   exec: echo $HOME
   env: ["HOME=/tmp"]
+^C
+$ robo home // => /tmp
 ```
 
-```
-robo home // => /tmp
+Variables can also be used to set env vars.
+
+```yaml
+$ cat > robo.yml
+aws-stage:
+  summary: AWS stage
+  exec: aws
+  env: ["AWS_PROFILE={{.aws.profile}}"]
+variables:
+  aws:
+    profile: eng-stage
+^C
+$ robo aws-stage ...
 ```
 
-Note that you cannot use shell featurs in the environment key, the list is static.
+Note that you cannot use shell featurs in the environment key.
 
 ### Templates
 
