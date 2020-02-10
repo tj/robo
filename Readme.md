@@ -17,9 +17,13 @@
 
 ## Installation
 
- Via binary [releases](https://github.com/tj/robo/releases).
+From [gobinaries.com](https://gobinaries.com):
 
- Via `go-get`:
+```sh
+$ curl -sf https://gobinaries.com/tj/robo | sh
+```
+
+From source:
 
 ```
 $ go get github.com/tj/robo
