@@ -49,8 +49,13 @@ func (t *Task) Run(args []string) error {
 
 // RunScript runs the target shell `script` file.
 func (t *Task) RunScript(args []string) error {
-	path := filepath.Join(t.LookupPath, t.Script)
-	bin := path
+	var path = t.Script
+	var bin = path
+
+	if !strings.HasPrefix(path, "/") {
+		path = filepath.Join(t.LookupPath, t.Script)
+		bin = path
+	}
 
 	stat, err := os.Stat(path)
 	if err != nil {
