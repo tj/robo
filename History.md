@@ -1,4 +1,10 @@
 
+v0.5.5 / 2020-02-16
+===================
+
+  * task: fix script path resolve()
+  * docs: add gobinaries.com install option
+
 v0.5.4 / 2019-08-31
 ===================
 
