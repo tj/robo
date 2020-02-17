@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"syscall"
 
@@ -77,8 +78,16 @@ func (t *Task) RunScript(args []string) error {
 
 // RunCommand runs the `command` via the shell.
 func (t *Task) RunCommand(args []string) error {
-	args = append([]string{"-c", t.Command, "sh"}, args...)
-	cmd := exec.Command("sh", args...)
+	shell := "sh"
+	flag := "-c"
+	if runtime.GOOS == "windows" {
+		shell = "cmd"
+		flag = "/C"
+		args = append([]string{flag, t.Command}, args...)
+	} else {
+		args = append([]string{flag, t.Command, shell}, args...)
+	}
+	cmd := exec.Command(shell, args...)
 	cmd.Env = append(os.Environ(), t.Env...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
