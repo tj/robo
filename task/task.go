@@ -78,16 +78,15 @@ func (t *Task) RunScript(args []string) error {
 
 // RunCommand runs the `command` via the shell.
 func (t *Task) RunCommand(args []string) error {
-	shell := "sh"
-	flag := "-c"
+	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
-		shell = "cmd"
-		flag = "/C"
-		args = append([]string{flag, t.Command}, args...)
+		commands := strings.Join(strings.Split(strings.TrimSpace(t.Command), "\n"), "&")
+		commands += "/C" + commands
+		cmd = exec.Command("cmd", commands)
 	} else {
-		args = append([]string{flag, t.Command, shell}, args...)
+		args = append([]string{"-c", t.Command, "sh"}, args...)
+		cmd = exec.Command("sh", args...)
 	}
-	cmd := exec.Command(shell, args...)
 	cmd.Env = append(os.Environ(), t.Env...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
