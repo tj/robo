@@ -80,7 +80,7 @@ func (t *Task) RunScript(args []string) error {
 func (t *Task) RunCommand(args []string) error {
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
-		commands := strings.Join(strings.Split(strings.TrimSpace(t.Command), "\n"), "&")
+		commands := strings.Join(strings.Split(strings.TrimSpace(t.Command), "\n"), "&&")
 		commands += "/C" + commands
 		cmd = exec.Command("cmd", commands)
 	} else {
