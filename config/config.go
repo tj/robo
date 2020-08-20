@@ -1,13 +1,12 @@
 package config
 
 import (
-	"bytes"
+	"fmt"
+	"github.com/tj/robo/interpolation"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os/user"
 	"path"
-	"text/template"
-
-	"gopkg.in/yaml.v2"
 
 	"github.com/tj/robo/task"
 )
@@ -15,10 +14,10 @@ import (
 // Config represents the main YAML configuration
 // loaded for Robo tasks.
 type Config struct {
-	File      string
-	Tasks     map[string]*task.Task `yaml:",inline"`
-	Variables map[string]interface{}
-	Templates struct {
+	File         string
+	Tasks        map[string]*task.Task `yaml:",inline"`
+	Variables    map[string]interface{}
+	Templates    struct {
 		List      string
 		Help      string
 		Variables string
@@ -28,24 +27,15 @@ type Config struct {
 // Eval evaluates the config by interpolating
 // all templates using the variables.
 func (c *Config) Eval() error {
-	for _, task := range c.Tasks {
-		err := interpolate(
-			c.Variables,
-			&task.Command,
-			&task.Summary,
-			&task.Script,
-			&task.Exec,
-		)
-		if err != nil {
-			return err
-		}
+	var err error
+	err = interpolation.Vars(&c.Variables)
+	if err != nil {
+		return fmt.Errorf("failed interpolating variables. Error: %v", err)
+	}
 
-		for i, item := range task.Env {
-			if err := interpolate(c.Variables, &item); err != nil {
-				return err
-			}
-			task.Env[i] = item
-		}
+	err = interpolation.Tasks(c.Tasks, c.Variables)
+	if err != nil {
+		return fmt.Errorf("failed interpolating tasks. Error: %v", err)
 	}
 	return nil
 }
@@ -112,32 +102,4 @@ func NewString(s string) (*Config, error) {
 	}
 
 	return c, nil
-}
-
-// Apply interpolation against the given strings.
-func interpolate(v interface{}, s ...*string) error {
-	for _, p := range s {
-		ret, err := eval(*p, v)
-		if err != nil {
-			return err
-		}
-		*p = ret
-	}
-	return nil
-}
-
-// Evaluate template against `v`.
-func eval(s string, v interface{}) (string, error) {
-	t, err := template.New("task").Parse(s)
-	if err != nil {
-		return "", err
-	}
-
-	var b bytes.Buffer
-	err = t.Execute(&b, v)
-	if err != nil {
-		return "", err
-	}
-
-	return string(b.Bytes()), nil
 }

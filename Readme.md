@@ -220,6 +220,20 @@ variables:
     stage: bastion-stage
 ```
 
+The variables section does also interpolate itself with its own data via `{{ .var }}` and allows shell like command 
+expressions via `$(echo true)` to be executed first providing the output result as a variable. Note that variables are 
+interpolated first and then command expressions are evaluated. This will allow you to reduce repetitive variable definitions and declarations. 
+
+````bash
+hash:
+  summary: echos the git {{ .branch }} branch's git hash
+  command: echo {{ .branch }} {{ .githash }}
+
+variables:
+  branch: master
+  githash: $(git rev-parse --short {{ .branch }})
+````
+
   Along with your own custom variables, robo defines the following variables:
 
 ```bash
