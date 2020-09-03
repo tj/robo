@@ -31,9 +31,13 @@ templates:
   list: testing
 
 variables:
+  region:
+    euw: europe-west
   hosts:
-    prod: bastion-prod
     stage: bastion-stage
+    prod: bastion-prod
+  dns: "{{ .region.euw }}.{{ .hosts.prod }}"
+  command: "$(true && echo $?)"
 `
 
 func TestNewString(t *testing.T) {
@@ -54,6 +58,10 @@ func TestNewString(t *testing.T) {
 	assert.Equal(t, `echo "bar"`, c.Tasks["bar"].Command)
 
 	assert.Equal(t, []string{"H=bastion-prod"}, c.Tasks["prod"].Env)
+
+	// test variables section interpolation
+	assert.Equal(t, "europe-west.bastion-prod", c.Variables["dns"])
+	assert.Equal(t, 0, c.Variables["command"])
 
 	assert.Equal(t, `testing`, c.Templates.List)
 }

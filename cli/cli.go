@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"text/template"
 
 	"github.com/fatih/color"
@@ -30,11 +31,9 @@ var list = `
 
 // Variables template.
 var variables = `
-{{- range $parent, $v := .Variables}}
-{{- range $k, $v := $v }}
-    {{cyan "%s.%s" $parent $k }}: {{$v}}
-{{- end}}
-{{end}}
+{{- range $k, $v := . }}
+{{cyan "%s" $k }}: {{$v}}
+{{- end }}
 `
 
 // Help template.
@@ -62,7 +61,8 @@ func ListVariables(c *config.Config) {
 		tmpl = t(c.Templates.Variables)
 	}
 
-	tmpl.Execute(os.Stdout, c)
+	flattened := flatten("", reflect.ValueOf(c.Variables))
+	tmpl.Execute(os.Stdout, flattened)
 }
 
 // List outputs the tasks defined.
@@ -117,4 +117,24 @@ func Fatalf(msg string, args ...interface{}) {
 // Template helper.
 func t(s string) *template.Template {
 	return template.Must(template.New("").Funcs(helpers).Parse(s))
+}
+
+// flatten reduces a given map into a flattened map of strings having the path to a variable as a key
+// and the actual value as a value. Resulting in ".path.to.key: value"
+func flatten(key string, v reflect.Value) map[string]string {
+	for v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
+		v = v.Elem()
+	}
+	m := map[string]string{}
+	switch v.Kind() {
+	case reflect.Map:
+		for _, k := range v.MapKeys() {
+			for k, v := range flatten(key+"."+fmt.Sprintf("%v", k), v.MapIndex(k)) {
+				m[k] = v
+			}
+		}
+	default:
+		m[key] = v.String()
+	}
+	return m
 }
