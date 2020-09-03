@@ -1,4 +1,9 @@
 
+v0.6.0 / 2020-09-03
+===================
+
+  * Introduce variable map self-interpolation and command variable interpolation. (@jenpet)
+
 v0.5.5 / 2020-02-16
 ===================
 
