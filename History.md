@@ -1,4 +1,11 @@
 
+v0.7.0 / 2020-09-19
+===================
+
+  * robo(1): add --quiet option
+  * cli: add ListNames()
+  * make: adjust dist target to exclude darwin/386
+
 v0.6.0 / 2020-09-03
 ===================
 
