@@ -12,7 +12,7 @@ var version = "0.6.0"
 
 const usage = `
   Usage:
-    robo [--config file]
+    robo [-q] [--config file]
     robo <task> [<arg>...] [--config file]
     robo help [<task>] [--config file]
     robo variables [--config file]
@@ -23,6 +23,7 @@ const usage = `
     -c, --config file   config file to load [default: robo.yml]
     -h, --help          output help information
     -v, --version       output version
+    -q, --quiet         output task names only
 
   Examples:
 
@@ -62,6 +63,11 @@ func main() {
 	default:
 		if name, ok := args["<task>"].(string); ok {
 			cli.Run(c, name, args["<arg>"].([]string))
+			return
+		}
+
+		if args["--quiet"].(bool) {
+			cli.ListNames(c)
 		} else {
 			cli.List(c)
 		}

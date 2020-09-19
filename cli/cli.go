@@ -29,6 +29,9 @@ var list = `
 {{end}}
 `
 
+// Quiet list.
+var quiet = "{{range .Tasks}}{{ .Name }}\n{{end}}"
+
 // Variables template.
 var variables = `
 {{- range $k, $v := . }}
@@ -73,6 +76,12 @@ func List(c *config.Config) {
 		tmpl = t(c.Templates.List)
 	}
 
+	tmpl.Execute(os.Stdout, c)
+}
+
+// ListNames lists task names.
+func ListNames(c *config.Config) {
+	tmpl := t(quiet)
 	tmpl.Execute(os.Stdout, c)
 }
 
