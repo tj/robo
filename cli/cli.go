@@ -111,9 +111,13 @@ func Run(c *config.Config, name string, args []string) {
 
 	task.LookupPath = filepath.Dir(c.File)
 
-	err := task.Run(args)
-	if err != nil {
-		Fatalf("error: %s", err)
+	errs := task.Run(args)
+	if len(errs) > 0 {
+		var msg string
+		for _, err := range errs {
+			msg += fmt.Sprintf("    - %+v\n", err)
+		}
+		Fatalf("error(s): \n%s", msg)
 	}
 }
 

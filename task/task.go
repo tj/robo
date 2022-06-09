@@ -28,32 +28,71 @@ type Task struct {
 	Usage      string
 	Examples   []*Example
 	Env        []string
+	Before     []*Runnable
+	After      []*Runnable
 }
 
-// Run the task with `args`.
-func (t *Task) Run(args []string) error {
-	if t.Exec != "" {
-		return t.RunExec(args)
+// Run the task and its preceding and succeding steps with `args`.
+// - A failing before step will still allow the main task and the after steps to be executed
+// - A failing task will always allow the after steps to be executed
+func (t *Task) Run(args []string) []error {
+	var errs []error
+	if err := t.runOptionals("before", t.Before, args); err != nil {
+		errs = append(errs, err)
 	}
 
-	if t.Script != "" {
-		return t.RunScript(args)
+	// wrap command, script, exec into a runnable
+	r := Runnable{Command: t.Command, Script: t.Script, Exec: t.Exec}
+
+	if err := r.Run(t.LookupPath, args, t.Env); err != nil {
+		errs = append(errs, fmt.Errorf("task '%s' failed. Error: %+v", t.Name, err))
 	}
 
-	if t.Command != "" {
-		return t.RunCommand(args)
+	if err := t.runOptionals("after", t.After, args); err != nil {
+		errs = append(errs, err)
+	}
+
+	return errs
+}
+
+func (t *Task) runOptionals(id string, rs []*Runnable, args []string) error {
+	for i, r := range rs {
+		if err := r.Run(t.LookupPath, args, t.Env); err != nil {
+			return fmt.Errorf("%s step #%d of task '%s' failed. Error: %+v", id, i+1, t.Name, err)
+		}
+	}
+	return nil
+}
+
+type Runnable struct {
+	Command string
+	Script  string
+	Exec    string
+}
+
+func (r *Runnable) Run(lookupPath string, args []string, env []string) error {
+	if r.Exec != "" {
+		return r.RunExec(args, env)
+	}
+
+	if r.Script != "" {
+		return r.RunScript(lookupPath, args, env)
+	}
+
+	if r.Command != "" {
+		return r.RunCommand(args, env)
 	}
 
 	return fmt.Errorf("nothing to run (add script, command, or exec key)")
 }
 
 // RunScript runs the target shell `script` file.
-func (t *Task) RunScript(args []string) error {
-	var path = t.Script
+func (r *Runnable) RunScript(lookupPath string, args []string, env []string) error {
+	var path = r.Script
 	var bin = path
 
 	if !strings.HasPrefix(path, "/") {
-		path = filepath.Join(t.LookupPath, t.Script)
+		path = filepath.Join(lookupPath, r.Script)
 		bin = path
 	}
 
@@ -68,7 +107,7 @@ func (t *Task) RunScript(args []string) error {
 	}
 
 	cmd := exec.Command(bin, args...)
-	cmd.Env = append(os.Environ(), t.Env...)
+	cmd.Env = append(os.Environ(), env...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -76,10 +115,10 @@ func (t *Task) RunScript(args []string) error {
 }
 
 // RunCommand runs the `command` via the shell.
-func (t *Task) RunCommand(args []string) error {
-	args = append([]string{"-c", t.Command, "sh"}, args...)
+func (r *Runnable) RunCommand(args []string, env []string) error {
+	args = append([]string{"-c", r.Command, "sh"}, args...)
 	cmd := exec.Command("sh", args...)
-	cmd.Env = append(os.Environ(), t.Env...)
+	cmd.Env = append(os.Environ(), env...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -87,8 +126,8 @@ func (t *Task) RunCommand(args []string) error {
 }
 
 // RunExec runs the `exec` command.
-func (t *Task) RunExec(args []string) error {
-	fields, err := shellwords.Parse(t.Exec)
+func (r *Runnable) RunExec(args []string, env []string) error {
+	fields, err := shellwords.Parse(r.Exec)
 	if err != nil {
 		return err
 	}
@@ -99,9 +138,9 @@ func (t *Task) RunExec(args []string) error {
 		return err
 	}
 
-	env := merge(os.Environ(), t.Env)
+	envs := merge(os.Environ(), env)
 	args = append(fields, args...)
-	return syscall.Exec(path, args, env)
+	return syscall.Exec(path, args, envs)
 }
 
 // Merge merges the given two lists of env vars.

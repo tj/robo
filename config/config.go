@@ -2,11 +2,12 @@ package config
 
 import (
 	"fmt"
-	"github.com/tj/robo/interpolation"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os/user"
 	"path"
+
+	"github.com/tj/robo/interpolation"
+	"gopkg.in/yaml.v2"
 
 	"github.com/tj/robo/task"
 )
@@ -14,10 +15,10 @@ import (
 // Config represents the main YAML configuration
 // loaded for Robo tasks.
 type Config struct {
-	File         string
-	Tasks        map[string]*task.Task `yaml:",inline"`
-	Variables    map[string]interface{}
-	Templates    struct {
+	File      string
+	Tasks     map[string]*task.Task `yaml:",inline"`
+	Variables map[string]interface{}
+	Templates struct {
 		List      string
 		Help      string
 		Variables string

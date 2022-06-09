@@ -4,13 +4,14 @@ package interpolation
 import (
 	"bytes"
 	"fmt"
-	"github.com/tj/robo/task"
-	"gopkg.in/yaml.v2"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
 	"text/template"
+
+	"github.com/tj/robo/task"
+	"gopkg.in/yaml.v2"
 )
 
 var commandPattern = regexp.MustCompile("\\$\\((.+)\\)")
@@ -91,13 +92,38 @@ func Tasks(tasks map[string]*task.Task, data map[string]interface{}) error {
 			return err
 		}
 
-		// interpolate a tasks environment data
+		// interpolate a task's environment data
 		for i, item := range task.Env {
 			if err := interpolate("env-var", data, &item); err != nil {
 				return err
 			}
 			task.Env[i] = item
 		}
+
+		// interpolate a task's before and after steps
+		if err := interpolateOptionals("before", task.Before, data); err != nil {
+			return err
+		}
+		if err := interpolateOptionals("after", task.After, data); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func interpolateOptionals(id string, rs []*task.Runnable, data map[string]interface{}) error {
+	for i, step := range rs {
+		err := interpolate(
+			id,
+			data,
+			&step.Command,
+			&step.Exec,
+			&step.Script,
+		)
+		if err != nil {
+			return err
+		}
+		rs[i] = step
 	}
 	return nil
 }
