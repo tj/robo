@@ -37,7 +37,7 @@ type Task struct {
 // - A failing task will always allow the after steps to be executed
 func (t *Task) Run(args []string) []error {
 	var errs []error
-	if err := t.runOptionals("before", t.Before, args); err != nil {
+	if err := t.runTaskOptionals("before", t.Before, args); err != nil {
 		errs = append(errs, err)
 	}
 
@@ -48,20 +48,15 @@ func (t *Task) Run(args []string) []error {
 		errs = append(errs, fmt.Errorf("task '%s' failed. Error: %+v", t.Name, err))
 	}
 
-	if err := t.runOptionals("after", t.After, args); err != nil {
+	if err := t.runTaskOptionals("after", t.After, args); err != nil {
 		errs = append(errs, err)
 	}
 
 	return errs
 }
 
-func (t *Task) runOptionals(id string, rs []*Runnable, args []string) error {
-	for i, r := range rs {
-		if err := r.Run(t.LookupPath, args, t.Env); err != nil {
-			return fmt.Errorf("%s step #%d of task '%s' failed. Error: %+v", id, i+1, t.Name, err)
-		}
-	}
-	return nil
+func (t *Task) runTaskOptionals(id string, rs []*Runnable, args []string) error {
+	return RunOptionals(id, t.Name, rs, args, t.LookupPath, t.Env)
 }
 
 type Runnable struct {
@@ -167,4 +162,13 @@ func merge(a, b []string) []string {
 	}
 
 	return ret
+}
+
+func RunOptionals(id string, parent string, rs []*Runnable, args []string, lookupPath string, envs []string) error {
+	for i, r := range rs {
+		if err := r.Run(lookupPath, args, envs); err != nil {
+			return fmt.Errorf("%s step #%d of task '%s' failed. Error: %+v", id, i+1, parent, err)
+		}
+	}
+	return nil
 }

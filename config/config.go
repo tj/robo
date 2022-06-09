@@ -15,6 +15,8 @@ import (
 // Config represents the main YAML configuration
 // loaded for Robo tasks.
 type Config struct {
+	Before    []*task.Runnable
+	After     []*task.Runnable
 	File      string
 	Tasks     map[string]*task.Task `yaml:",inline"`
 	Variables map[string]interface{}
@@ -37,6 +39,16 @@ func (c *Config) Eval() error {
 	err = interpolation.Tasks(c.Tasks, c.Variables)
 	if err != nil {
 		return fmt.Errorf("failed interpolating tasks. Error: %v", err)
+	}
+
+	err = interpolation.Optionals("before", c.Before, c.Variables)
+	if err != nil {
+		return fmt.Errorf("failed interpolating before optionals. Error: %v", err)
+	}
+
+	err = interpolation.Optionals("after", c.After, c.Variables)
+	if err != nil {
+		return fmt.Errorf("failed interpolating after optionals. Error: %v", err)
 	}
 	return nil
 }

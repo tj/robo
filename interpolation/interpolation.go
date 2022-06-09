@@ -72,11 +72,12 @@ func captureCommandOutput(args string) (string, error) {
 	cmd.Stdout = &b
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
-	return strings.TrimSuffix(string(b.Bytes()), "\n"), err
+	return strings.TrimSuffix(b.String(), "\n"), err
 }
 
 // Tasks interpolates a given task with a set of data replacing placeholders
-// in the command, summary, script, exec and envs property.
+// in the command, summary, script, exec and envs properties. If applicable the optionals 'before' and 'after' are also
+// interpolated.
 func Tasks(tasks map[string]*task.Task, data map[string]interface{}) error {
 	for _, task := range tasks {
 		// interpolate the tasks main fields
@@ -101,17 +102,17 @@ func Tasks(tasks map[string]*task.Task, data map[string]interface{}) error {
 		}
 
 		// interpolate a task's before and after steps
-		if err := interpolateOptionals("before", task.Before, data); err != nil {
+		if err := Optionals("before", task.Before, data); err != nil {
 			return err
 		}
-		if err := interpolateOptionals("after", task.After, data); err != nil {
+		if err := Optionals("after", task.After, data); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func interpolateOptionals(id string, rs []*task.Runnable, data map[string]interface{}) error {
+func Optionals(id string, rs []*task.Runnable, data map[string]interface{}) error {
 	for i, step := range rs {
 		err := interpolate(
 			id,

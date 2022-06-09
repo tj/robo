@@ -9,6 +9,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/tj/robo/config"
+	"github.com/tj/robo/task"
 )
 
 // Template helpers.
@@ -104,14 +105,26 @@ func Help(c *config.Config, name string) {
 
 // Run the task.
 func Run(c *config.Config, name string, args []string) {
-	task, ok := c.Tasks[name]
+	t, ok := c.Tasks[name]
 	if !ok {
 		Fatalf("undefined task %q", name)
 	}
+	lookupPath := filepath.Dir(c.File)
+	t.LookupPath = lookupPath
 
-	task.LookupPath = filepath.Dir(c.File)
+	var errs []error
+	if err := task.RunOptionals("before", "GLOBAL", c.Before, args, lookupPath, nil); err != nil {
+		errs = append(errs, err)
+	}
 
-	errs := task.Run(args)
+	if runErrs := t.Run(args); len(runErrs) > 0 {
+		errs = append(errs, runErrs...)
+	}
+
+	if err := task.RunOptionals("after", "GLOBAL", c.After, args, lookupPath, nil); err != nil {
+		errs = append(errs, err)
+	}
+
 	if len(errs) > 0 {
 		var msg string
 		for _, err := range errs {
