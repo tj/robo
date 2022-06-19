@@ -17,7 +17,7 @@ import (
 var commandPattern = regexp.MustCompile("\\$\\((.+)\\)")
 
 // Vars interpolates a given map of interfaces (strings or submaps) with itself
-// returning it mit populated template values.
+// returning it with populated template values.
 func Vars(vars *map[string]interface{}) error {
 	b, err := yaml.Marshal(*vars)
 	if err != nil {
@@ -112,6 +112,7 @@ func Tasks(tasks map[string]*task.Task, data map[string]interface{}) error {
 	return nil
 }
 
+// Optionals interpolates a list of runnables (i.e. optional steps for a task or the overall robo configuration).
 func Optionals(id string, rs []*task.Runnable, data map[string]interface{}) error {
 	for i, step := range rs {
 		err := interpolate(

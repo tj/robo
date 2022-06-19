@@ -300,6 +300,30 @@ $ robo aws-stage ...
 
 Note that you cannot use shell featurs in the environment key.
 
+### Setup / Cleanup
+Some tasks or even your entire robo configuration may require steps upfront for setup or afterwards for a cleanup. The keywords `before` and `after` can be embedded into a task or into the overall robo configuration. It has the same executable syntax as a task: `script`, `exec` and `command`.
+Defining it on a task level causes the steps to be executed before (respectively after) the task. Global before or after steps are invoked for _every_ task in the configuration.
+All steps get interpolated the same way tasks and variables are interpolated.
+
+```yaml
+before:
+  - command: echo "global before {{ .foo }}"
+after:
+  - script: /global/after-script.sh
+
+foo:
+  before:
+    - command: echo "local before {{ .foo }}"
+    - exec: git pull -r
+  after:
+    - command: echo "local after"
+    - exec: git reset --hard HEAD
+  exec: git status
+
+variables:
+  foo: bar
+```
+
 ### Templates
 
  Task `list` and `help` output may be re-configured, for example if you

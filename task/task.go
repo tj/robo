@@ -59,12 +59,20 @@ func (t *Task) runTaskOptionals(id string, rs []*Runnable, args []string) error 
 	return RunOptionals(id, t.Name, rs, args, t.LookupPath, t.Env)
 }
 
+// Runnable describes an 'executable' element defined in the overall robo configuration.
+// A valid Runnable is one of: command, script or exec.
+//
+// - command is a shell script provided as an optional multilined string.
+// - script holds the path to a script passing the given arguments straight
+// - exec describes a binary which will be looked up for execution
 type Runnable struct {
 	Command string
 	Script  string
 	Exec    string
 }
 
+// Run invokes the Runnable according to its definition.
+// An invalid (empty) Runnable will result in an error.
 func (r *Runnable) Run(lookupPath string, args []string, env []string) error {
 	if r.Exec != "" {
 		return r.RunExec(args, env)
@@ -164,6 +172,7 @@ func merge(a, b []string) []string {
 	return ret
 }
 
+// RunOptionals executes a list of runnables and immediately returns an error if one of them an error not executing the remaining ones.
 func RunOptionals(id string, parent string, rs []*Runnable, args []string, lookupPath string, envs []string) error {
 	for i, r := range rs {
 		if err := r.Run(lookupPath, args, envs); err != nil {
