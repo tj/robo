@@ -10,9 +10,19 @@ import (
 )
 
 var s = `
+before:
+- command: echo "global before"
+
+after:
+- command: echo "global after"
+
 foo:
   summary: Command foo.
+  before:
+  - command: echo "before"
   command: echo "foo"
+  after:
+  - command: echo "after"
 
 bar:
   summary: Command bar.
@@ -50,9 +60,13 @@ func TestNewString(t *testing.T) {
 	assert.Equal(t, `ssh bastion-stage -t robo`, c.Tasks["stage"].Command)
 	assert.Equal(t, `ssh bastion-prod -t robo`, c.Tasks["prod"].Command)
 
+	assert.Equal(t, `echo "global before"`, c.Before[0].Command)
+	assert.Equal(t, `echo "global after"`, c.After[0].Command)
 	assert.Equal(t, `foo`, c.Tasks["foo"].Name)
 	assert.Equal(t, `Command foo.`, c.Tasks["foo"].Summary)
 	assert.Equal(t, `echo "foo"`, c.Tasks["foo"].Command)
+	assert.Equal(t, `echo "before"`, c.Tasks["foo"].Before[0].Command)
+	assert.Equal(t, `echo "after"`, c.Tasks["foo"].After[0].Command)
 
 	assert.Equal(t, `Command bar.`, c.Tasks["bar"].Summary)
 	assert.Equal(t, `echo "bar"`, c.Tasks["bar"].Command)

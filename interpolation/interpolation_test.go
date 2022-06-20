@@ -1,9 +1,10 @@
 package interpolation
 
 import (
+	"testing"
+
 	"github.com/bmizerany/assert"
 	"github.com/tj/robo/task"
-	"testing"
 )
 
 func TestVars_whenValueReferencesOtherKey_shouldReplaceAccordingly(t *testing.T) {
@@ -21,10 +22,9 @@ func TestVars_whenValueReferencesOtherKey_shouldReplaceAccordingly(t *testing.T)
 func TestVars_whenValueIsCommand_shouldReplaceWithCommandResult(t *testing.T) {
 	vars := map[string]interface{}{
 		"foo": "$(echo Hello)",
-		"bar":
-			map[string]interface{}{
-				"sub": "$(echo World!)",
-			},
+		"bar": map[string]interface{}{
+			"sub": "$(echo World!)",
+		},
 	}
 
 	err := Vars(&vars)
@@ -36,14 +36,24 @@ func TestVars_whenValueIsCommand_shouldReplaceWithCommandResult(t *testing.T) {
 
 func TestTasks(t *testing.T) {
 	tk := task.Task{
-		Summary:    "This task handles {{ .foo }} World!",
-		Command:    "echo {{ .foo }} World!",
-		Script:     "/path/to/{{ .foo }}.sh",
-		Exec:       "{{ .foo }} World!",
-		Env:        []string{"bar={{ .foo }} World!"},
+		Summary: "This task handles {{ .foo }} World!",
+		Before: []*task.Runnable{
+			{Command: "{{ .foo }}"},
+			{Script: "{{ .foo }}"},
+			{Exec: "{{ .foo }}"},
+		},
+		After: []*task.Runnable{
+			{Command: "{{ .bar }}"},
+			{Script: "{{ .bar }}"},
+			{Exec: "{{ .bar }}"},
+		},
+		Command: "echo {{ .foo }} World!",
+		Script:  "/path/to/{{ .foo }}.sh",
+		Exec:    "{{ .foo }} World!",
+		Env:     []string{"bar={{ .foo }} World!"},
 	}
 
-	vars := map[string]interface{}{"foo": "Hello"}
+	vars := map[string]interface{}{"foo": "Hello", "bar": "Bye"}
 
 	err := Tasks(map[string]*task.Task{"tk": &tk}, vars)
 	assert.Equal(t, nil, err)
@@ -51,5 +61,11 @@ func TestTasks(t *testing.T) {
 	assert.Equal(t, "echo Hello World!", tk.Command)
 	assert.Equal(t, "/path/to/Hello.sh", tk.Script)
 	assert.Equal(t, "Hello World!", tk.Exec)
+	assert.Equal(t, "Hello", tk.Before[0].Command)
+	assert.Equal(t, "Hello", tk.Before[1].Script)
+	assert.Equal(t, "Hello", tk.Before[2].Exec)
+	assert.Equal(t, "Bye", tk.After[0].Command)
+	assert.Equal(t, "Bye", tk.After[1].Script)
+	assert.Equal(t, "Bye", tk.After[2].Exec)
 	assert.Equal(t, "bar=Hello World!", tk.Env[0])
 }

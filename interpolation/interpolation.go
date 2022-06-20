@@ -4,19 +4,20 @@ package interpolation
 import (
 	"bytes"
 	"fmt"
-	"github.com/tj/robo/task"
-	"gopkg.in/yaml.v2"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
 	"text/template"
+
+	"github.com/tj/robo/task"
+	"gopkg.in/yaml.v2"
 )
 
 var commandPattern = regexp.MustCompile("\\$\\((.+)\\)")
 
 // Vars interpolates a given map of interfaces (strings or submaps) with itself
-// returning it mit populated template values.
+// returning it with populated template values.
 func Vars(vars *map[string]interface{}) error {
 	b, err := yaml.Marshal(*vars)
 	if err != nil {
@@ -71,11 +72,12 @@ func captureCommandOutput(args string) (string, error) {
 	cmd.Stdout = &b
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
-	return strings.TrimSuffix(string(b.Bytes()), "\n"), err
+	return strings.TrimSuffix(b.String(), "\n"), err
 }
 
 // Tasks interpolates a given task with a set of data replacing placeholders
-// in the command, summary, script, exec and envs property.
+// in the command, summary, script, exec and envs properties. If applicable the optionals 'before' and 'after' are also
+// interpolated.
 func Tasks(tasks map[string]*task.Task, data map[string]interface{}) error {
 	for _, task := range tasks {
 		// interpolate the tasks main fields
@@ -91,13 +93,39 @@ func Tasks(tasks map[string]*task.Task, data map[string]interface{}) error {
 			return err
 		}
 
-		// interpolate a tasks environment data
+		// interpolate a task's environment data
 		for i, item := range task.Env {
 			if err := interpolate("env-var", data, &item); err != nil {
 				return err
 			}
 			task.Env[i] = item
 		}
+
+		// interpolate a task's before and after steps
+		if err := Optionals("before", task.Before, data); err != nil {
+			return err
+		}
+		if err := Optionals("after", task.After, data); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Optionals interpolates a list of runnables (i.e. optional steps for a task or the overall robo configuration).
+func Optionals(id string, rs []*task.Runnable, data map[string]interface{}) error {
+	for i, step := range rs {
+		err := interpolate(
+			id,
+			data,
+			&step.Command,
+			&step.Exec,
+			&step.Script,
+		)
+		if err != nil {
+			return err
+		}
+		rs[i] = step
 	}
 	return nil
 }
