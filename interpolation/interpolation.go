@@ -88,6 +88,7 @@ func Tasks(tasks map[string]*task.Task, data map[string]interface{}) error {
 			&task.Summary,
 			&task.Script,
 			&task.Exec,
+			&task.Usage,
 		)
 		if err != nil {
 			return err
@@ -101,6 +102,11 @@ func Tasks(tasks map[string]*task.Task, data map[string]interface{}) error {
 			task.Env[i] = item
 		}
 
+		// interpolate a task's list of examples
+		if err := Examples(task.Examples, data); err != nil {
+			return err
+		}
+
 		// interpolate a task's before and after steps
 		if err := Optionals("before", task.Before, data); err != nil {
 			return err
@@ -108,6 +114,20 @@ func Tasks(tasks map[string]*task.Task, data map[string]interface{}) error {
 		if err := Optionals("after", task.After, data); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+// Examples interpolates the list of examples (description and command attribute) for a task
+func Examples(examples []*task.Example, data map[string]interface{}) error {
+	for i, example := range examples {
+		if err := interpolate("example-description", data, &example.Description); err != nil {
+			return err
+		}
+		if err := interpolate("example-command", data, &example.Command); err != nil {
+			return err
+		}
+		examples[i] = example
 	}
 	return nil
 }
