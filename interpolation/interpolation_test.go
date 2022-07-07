@@ -51,6 +51,10 @@ func TestTasks(t *testing.T) {
 		Script:  "/path/to/{{ .foo }}.sh",
 		Exec:    "{{ .foo }} World!",
 		Env:     []string{"bar={{ .foo }} World!"},
+		Usage:   "robo {{.bar}}",
+		Examples: []*task.Example{
+			{Description: "{{ .foo }} Example!", Command: "robo {{.bar}}"},
+		},
 	}
 
 	vars := map[string]interface{}{"foo": "Hello", "bar": "Bye"}
@@ -68,4 +72,7 @@ func TestTasks(t *testing.T) {
 	assert.Equal(t, "Bye", tk.After[1].Script)
 	assert.Equal(t, "Bye", tk.After[2].Exec)
 	assert.Equal(t, "bar=Hello World!", tk.Env[0])
+	assert.Equal(t, "robo Bye", tk.Usage)
+	assert.Equal(t, "Hello Example!", tk.Examples[0].Description)
+	assert.Equal(t, "robo Bye", tk.Examples[0].Command)
 }
