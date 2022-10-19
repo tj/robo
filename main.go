@@ -8,7 +8,7 @@ import (
 	"github.com/tj/robo/config"
 )
 
-var version = "0.7.0-cgamesplay"
+var version = "0.8.0"
 
 const usage = `
   Usage:
