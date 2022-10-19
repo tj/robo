@@ -7,7 +7,7 @@ dist:
 	@gox \
 		--osarch "darwin/amd64 darwin/arm64 linux/amd64 linux/arm" \
 		--output "dist/{{.Dir}}_{{.OS}}_{{.Arch}}"
-	rm dist/*.gz
+	rm -f dist/*.gz
 	ls dist/* | while read i; do gzip $$i; done
 
 clean:
