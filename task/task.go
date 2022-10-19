@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"strings"
 	"syscall"
@@ -89,6 +90,17 @@ func (r *Runnable) Run(lookupPath string, args []string, env []string) error {
 	return fmt.Errorf("nothing to run (add script, command, or exec key)")
 }
 
+func (r *Runnable) runInternal(cmd *exec.Cmd) error {
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+	// Ignore SIGINT while waiting for a child process. The child process will
+	// receive the signal and abort normally, then we will continue.
+	signal.Ignore(os.Interrupt);
+	defer signal.Reset(os.Interrupt);
+	return cmd.Wait();
+}
+
 // RunScript runs the target shell `script` file.
 func (r *Runnable) RunScript(lookupPath string, args []string, env []string) error {
 	var path = r.Script
@@ -114,7 +126,7 @@ func (r *Runnable) RunScript(lookupPath string, args []string, env []string) err
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	return r.runInternal(cmd)
 }
 
 // RunCommand runs the `command` via the shell.
@@ -125,7 +137,7 @@ func (r *Runnable) RunCommand(args []string, env []string) error {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	return r.runInternal(cmd)
 }
 
 // RunExec runs the `exec` command.
